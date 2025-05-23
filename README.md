@@ -1,8 +1,6 @@
 # 🧮 Even or Odd Checker
 
 ![JavaScript](https://img.shields.io/badge/language-JavaScript-yellow)
-![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)
-![Node.js](https://img.shields.io/badge/runtime-Node.js-green)
 
 This is a simple and beginner-friendly JavaScript program that checks if a number is **even** or **odd**. It also prints the **remainder** when divided by 2, making it a great intro project for learning the modulo operator (`%`).
 
