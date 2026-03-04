@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Even or Odd Checker</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+  </head>
+  <body class="min-h-screen bg-slate-100 text-slate-900">
+    <main class="mx-auto flex min-h-screen max-w-2xl items-center justify-center p-6">
+      <section class="w-full rounded-2xl bg-white p-6 shadow-xl sm:p-8">
+        <h1 class="text-2xl font-bold sm:text-3xl">Even or Odd Checker</h1>
+        <p class="mt-2 text-sm text-slate-600 sm:text-base">
+          Enter any integer to check whether it is even or odd.
+        </p>
+
+        <form id="checker-form" class="mt-6 space-y-4">
+          <label for="number-input" class="block text-sm font-medium text-slate-700">
+            Number
+          </label>
+          <input
+            id="number-input"
+            name="number"
+            type="number"
+            step="1"
+            required
+            class="w-full rounded-lg border border-slate-300 px-4 py-3 outline-none ring-0 transition focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200"
+            placeholder="e.g. 42"
+          />
+          <button
+            type="submit"
+            class="w-full rounded-lg bg-indigo-600 px-4 py-3 font-semibold text-white transition hover:bg-indigo-700"
+          >
+            Check Number
+          </button>
+        </form>
+
+        <div id="result-box" class="mt-6 hidden rounded-lg border border-slate-200 bg-slate-50 p-4">
+          <p id="remainder-text" class="text-sm text-slate-700"></p>
+          <p id="result-text" class="mt-2 text-lg font-semibold"></p>
+        </div>
+      </section>
+    </main>
+
+    <script src="./index.js"></script>
+  </body>
+</html>
