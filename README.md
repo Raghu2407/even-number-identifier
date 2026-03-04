@@ -1,27 +1,26 @@
 # 🧮 Even or Odd Checker
 
 ![JavaScript](https://img.shields.io/badge/language-JavaScript-yellow)
+![Tailwind CSS](https://img.shields.io/badge/style-TailwindCSS-38B2AC)
 
-This is a simple and beginner-friendly JavaScript program that checks if a number is **even** or **odd**. It also prints the **remainder** when divided by 2, making it a great intro project for learning the modulo operator (`%`).
+A simple web UI that checks whether an entered integer is **even** or **odd**.
 
----
+## ✨ Features
 
-## 🛠 How It Works
+- Clean, responsive interface built with simple HTML
+- Tailwind CSS loaded via CDN
+- Shows both:
+  - the remainder when dividing by 2
+  - the final result (**Even** or **Odd**)
 
-1. Define a number `n` you want to check.
-2. Calculate `n % 2` to get the remainder.
-3. Display the remainder in the console.
-4. Use an array `["Even", "Odd"]` to map the remainder to the final result:
-   - `0 → Even`
-   - `1 → Odd`
+## 🚀 Run locally
 
----
+Open `index.html` in your browser.
 
-## 🧾 Example Code
+## 🧠 Core logic
 
-```javascript
-var n = 10;
-var result = ["Even", "Odd"];
+The JavaScript logic maps remainder to a result array:
 
-console.log("Remainder when " + n + " is divided by 2 is: " + (n % 2));
-console.log("Result:", result[n % 2]); // Output: "Even"
+- `0 → Even`
+- `1 → Odd`
+
