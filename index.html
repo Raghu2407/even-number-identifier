@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Even / Odd Checker</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@700;800&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --bg: #0a0a0f;
+      --card: #111118;
+      --even: #00e5a0;
+      --odd: #ff4f6d;
+      --neutral: #c8c8e0;
+      --border: #2a2a3a;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      background: var(--bg);
+      font-family: 'Space Mono', monospace;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    /* Animated grid background */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px);
+      background-size: 48px 48px;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* Soft glow blob */
+    .blob {
+      position: fixed;
+      border-radius: 50%;
+      filter: blur(120px);
+      opacity: 0.15;
+      pointer-events: none;
+      z-index: 0;
+      transition: background 0.8s ease;
+    }
+    .blob-1 { width: 500px; height: 500px; top: -100px; left: -100px; background: var(--even); }
+    .blob-2 { width: 400px; height: 400px; bottom: -80px; right: -80px; background: var(--odd); }
+
+    .card {
+      position: relative;
+      z-index: 1;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      padding: 48px 40px 40px;
+      width: min(460px, 94vw);
+      box-shadow: 0 32px 80px rgba(0,0,0,0.6);
+    }
+
+    .badge {
+      display: inline-block;
+      font-size: 10px;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: #666;
+      border: 1px solid #2a2a3a;
+      padding: 4px 12px;
+      border-radius: 99px;
+      margin-bottom: 20px;
+    }
+
+    h1 {
+      font-family: 'Syne', sans-serif;
+      font-size: 2.4rem;
+      font-weight: 800;
+      color: #fff;
+      line-height: 1.1;
+      margin: 0 0 8px;
+    }
+
+    .subtitle {
+      font-size: 12px;
+      color: #555;
+      margin-bottom: 36px;
+      letter-spacing: 0.5px;
+    }
+
+    .input-row {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 28px;
+    }
+
+    input[type="number"] {
+      flex: 1;
+      background: #0d0d14;
+      border: 1.5px solid var(--border);
+      border-radius: 12px;
+      color: #fff;
+      font-family: 'Space Mono', monospace;
+      font-size: 1.5rem;
+      padding: 14px 20px;
+      outline: none;
+      transition: border-color 0.2s;
+      -moz-appearance: textfield;
+    }
+    input[type="number"]::-webkit-inner-spin-button,
+    input[type="number"]::-webkit-outer-spin-button { -webkit-appearance: none; }
+    input[type="number"]:focus { border-color: #444; }
+
+    button {
+      background: #fff;
+      color: #0a0a0f;
+      border: none;
+      border-radius: 12px;
+      padding: 14px 22px;
+      font-family: 'Space Mono', monospace;
+      font-size: 0.85rem;
+      font-weight: 700;
+      cursor: pointer;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      transition: transform 0.15s, opacity 0.15s;
+      white-space: nowrap;
+    }
+    button:hover { opacity: 0.88; transform: scale(0.98); }
+    button:active { transform: scale(0.95); }
+
+    /* Result panel */
+    .result-panel {
+      background: #0d0d14;
+      border: 1.5px solid var(--border);
+      border-radius: 16px;
+      padding: 28px 24px;
+      min-height: 130px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 16px;
+      transition: border-color 0.4s;
+    }
+    .result-panel.even { border-color: var(--even); }
+    .result-panel.odd  { border-color: var(--odd); }
+
+    .result-label {
+      font-size: 11px;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: #444;
+    }
+
+    .result-value {
+      font-family: 'Syne', sans-serif;
+      font-size: 3.2rem;
+      font-weight: 800;
+      color: #fff;
+      line-height: 1;
+      transition: color 0.4s;
+    }
+    .result-value.even { color: var(--even); }
+    .result-value.odd  { color: var(--odd); }
+
+    .meta-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .meta-chip {
+      background: #13131d;
+      border: 1px solid #222230;
+      border-radius: 10px;
+      padding: 12px 16px;
+    }
+    .meta-chip .label { font-size: 10px; color: #444; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 4px; }
+    .meta-chip .value { font-size: 1.1rem; color: var(--neutral); }
+
+    /* Bit visualizer */
+    .bits {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+    .bit {
+      width: 28px; height: 28px;
+      border-radius: 6px;
+      background: #1a1a2a;
+      border: 1px solid #222;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      color: #444;
+      transition: background 0.3s, color 0.3s, border-color 0.3s;
+    }
+    .bit.on { background: #1e2e2a; border-color: var(--even); color: var(--even); }
+    .bit.lsb-even { background: #1e2e2a; border-color: var(--even); color: var(--even); }
+    .bit.lsb-odd  { background: #2e1a1f; border-color: var(--odd);  color: var(--odd); }
+
+    .empty-hint {
+      font-size: 13px;
+      color: #333;
+      text-align: center;
+      letter-spacing: 0.5px;
+    }
+
+    /* Slide-in animation */
+    @keyframes slideUp {
+      from { opacity: 0; transform: translateY(12px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .animate-in { animation: slideUp 0.35s ease forwards; }
+
+    /* History */
+    .history-title {
+      font-size: 10px;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: #333;
+      margin: 24px 0 10px;
+    }
+    .history-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+    .history-tag {
+      font-size: 11px;
+      padding: 4px 10px;
+      border-radius: 6px;
+      border: 1px solid #222;
+      color: #555;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .history-tag:hover { color: #aaa; border-color: #444; }
+    .history-tag.even { border-color: #1a3028; color: var(--even); opacity: 0.7; }
+    .history-tag.odd  { border-color: #3a1a22; color: var(--odd);  opacity: 0.7; }
+  </style>
+</head>
+<body>
+
+<div class="blob blob-1" id="blob1"></div>
+<div class="blob blob-2" id="blob2"></div>
+
+<div class="card">
+  <div class="badge">modulo operator</div>
+  <h1>Even / Odd<br>Checker</h1>
+  <p class="subtitle">// n % 2 === 0 ? "Even" : "Odd"</p>
+
+  <div class="input-row">
+    <input
+      type="number"
+      id="numInput"
+      placeholder="42"
+      autocomplete="off"
+    />
+    <button onclick="check()">Check</button>
+  </div>
+
+  <div class="result-panel" id="resultPanel">
+    <p class="empty-hint">Enter a number and hit Check →</p>
+  </div>
+
+  <div id="historySection" style="display:none">
+    <p class="history-title">// recent</p>
+    <div class="history-list" id="historyList"></div>
+  </div>
+</div>
+
+<script>
+  const input = document.getElementById('numInput');
+  const panel = document.getElementById('resultPanel');
+  const blob1 = document.getElementById('blob1');
+  const blob2 = document.getElementById('blob2');
+  const historySection = document.getElementById('historySection');
+  const historyList = document.getElementById('historyList');
+
+  let history = [];
+
+  input.addEventListener('keydown', e => { if (e.key === 'Enter') check(); });
+
+  function toBinary(n) {
+    const abs = Math.abs(Math.round(n));
+    return abs.toString(2).padStart(8, '0');
+  }
+
+  function check() {
+    const raw = input.value.trim();
+    if (raw === '' || isNaN(raw)) {
+      panel.className = 'result-panel';
+      panel.innerHTML = `<p class="empty-hint">Please enter a valid integer.</p>`;
+      return;
+    }
+
+    const n = parseInt(raw, 10);
+    const rem = ((n % 2) + 2) % 2; // handles negatives
+    const isEven = rem === 0;
+    const type = isEven ? 'even' : 'odd';
+    const color = isEven ? 'var(--even)' : 'var(--odd)';
+
+    // Update blobs
+    if (isEven) {
+      blob1.style.background = 'var(--even)';
+      blob2.style.background = 'var(--even)';
+    } else {
+      blob1.style.background = 'var(--odd)';
+      blob2.style.background = 'var(--odd)';
+    }
+
+    // Build bit display
+    const bits = toBinary(n);
+    const bitsHtml = bits.split('').map((b, i) => {
+      let cls = b === '1' ? 'bit on' : 'bit';
+      if (i === bits.length - 1) cls += ` lsb-${type}`;
+      return `<div class="${cls}">${b}</div>`;
+    }).join('');
+
+    panel.className = `result-panel ${type} animate-in`;
+    panel.innerHTML = `
+      <div>
+        <div class="result-label">result</div>
+        <div class="result-value ${type}">${isEven ? 'Even' : 'Odd'}</div>
+      </div>
+      <div class="meta-row">
+        <div class="meta-chip">
+          <div class="label">number</div>
+          <div class="value">${n}</div>
+        </div>
+        <div class="meta-chip">
+          <div class="label">n % 2</div>
+          <div class="value" style="color:${color}">${rem}</div>
+        </div>
+      </div>
+      <div class="meta-chip">
+        <div class="label" style="margin-bottom:8px">binary — LSB is <span style="color:${color}">${rem}</span></div>
+        <div class="bits">${bitsHtml}</div>
+      </div>
+    `;
+
+    // void reflow to restart animation
+    void panel.offsetWidth;
+    panel.classList.add('animate-in');
+
+    // History
+    addHistory(n, type);
+  }
+
+  function addHistory(n, type) {
+    history = history.filter(h => h.n !== n);
+    history.unshift({ n, type });
+    if (history.length > 10) history.pop();
+
+    historySection.style.display = 'block';
+    historyList.innerHTML = history.map(h =>
+      `<span class="history-tag ${h.type}" onclick="loadHistory(${h.n})">${h.n}</span>`
+    ).join('');
+  }
+
+  function loadHistory(n) {
+    input.value = n;
+    check();
+  }
+</script>
+</body>
+</html>
